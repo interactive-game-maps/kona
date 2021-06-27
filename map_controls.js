@@ -93,7 +93,7 @@ var user_layers = JSON.parse(localStorage.getItem('user_layers'));
 if (!user_layers) {
     user_layers = [
         documents_group_name,
-        talisman_group_name,
+        talismans_group_name,
         fire_places_group_name,
         pictures_group_name
     ];
