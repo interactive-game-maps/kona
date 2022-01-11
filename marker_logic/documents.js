@@ -1,18 +1,10 @@
-// Create list
-var documents_list = document.createElement('ul');
-documents_list.className = 'collectibles_list';
-
-// Add list to sidebar
 var documents_group_name = 'Documents';
-sidebar.addPanel({
-    id: 'documents',
-    tab: '<i class="fas fa-file"></i>',
-    title: documents_group_name,
-    pane: '<p></p>' // placeholder to get a proper pane
-});
-document.getElementById('documents').appendChild(documents_list);
+var documents_group_id = 'documents';
+var documents_create_checkbox = true;
 
-// Create marekr group
+var documents_list = createSidebarTab(documents_group_id, documents_group_name, '<i class="fas fa-file"></i>');
+
+// Create marker group
 var documents_group = L.markerClusterGroup({
     maxClusterRadius: 40
 });
@@ -33,13 +25,24 @@ L.geoJSON(documents, {
         });
     },
     onEachFeature: (feature, layer) => {
-        onEachFeature(feature, layer, {
+        addPopup(feature, layer, {
             layer_group: documents_group,
             list: documents_list,
-            list_name: "documents",
-            create_checkbox: true
+            list_id: documents_group_id,
+            create_checkbox: documents_create_checkbox
+        });
+        saveMarker(feature, layer, {
+            list_id: documents_group_id
         });
     }
 }).addTo(documents_group);
-marker.get('documents').set('group', documents_group);
-marker.get('documents').set('name', documents_group_name);
+marker.get(documents_group_id).set('group', documents_group);
+marker.get(documents_group_id).set('name', documents_group_name);
+
+if (documents_create_checkbox) {
+    setColumnCount(marker.get(documents_group_id), documents_list);
+}
+
+// Add as a default layer
+// This needs the display name because the layer control don't report ids
+default_layers.push(documents_group_name);

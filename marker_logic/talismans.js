@@ -1,18 +1,10 @@
-// Create list
-var talismans_list = document.createElement('ul');
-talismans_list.className = 'collectibles_list';
-
-// Add list to sidebar
 var talismans_group_name = 'Talismans';
-sidebar.addPanel({
-    id: 'talismans',
-    tab: '<i class="fas fa-gem"></i>',
-    title: talismans_group_name,
-    pane: '<p></p>' // placeholder to get a proper pane
-});
-document.getElementById('talismans').appendChild(talismans_list);
+var talismans_group_id = 'talismans';
+var talismans_create_checkbox = true;
 
-// Create marekr group
+var talismans_list = createSidebarTab(talismans_group_id, talismans_group_name, '<i class="fas fa-gem"></i>');
+
+// Create marker group
 var talismans_group = L.markerClusterGroup({
     maxClusterRadius: 40
 });
@@ -33,13 +25,24 @@ L.geoJSON(talismans, {
         });
     },
     onEachFeature: (feature, layer) => {
-        onEachFeature(feature, layer, {
+        addPopup(feature, layer, {
             layer_group: talismans_group,
             list: talismans_list,
-            list_name: "talismans",
-            create_checkbox: true
+            list_id: talismans_group_id,
+            create_checkbox: talismans_create_checkbox
+        });
+        saveMarker(feature, layer, {
+            list_id: talismans_group_id
         });
     }
 }).addTo(talismans_group);
-marker.get('talismans').set('group', talismans_group);
-marker.get('talismans').set('name', talismans_group_name);
+marker.get(talismans_group_id).set('group', talismans_group);
+marker.get(talismans_group_id).set('name', talismans_group_name);
+
+if (talismans_create_checkbox) {
+    setColumnCount(marker.get(talismans_group_id), talismans_list);
+}
+
+// Add as a default layer
+// This needs the display name because the layer control don't report ids
+default_layers.push(talismans_group_name);

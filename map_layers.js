@@ -1,3 +1,6 @@
+var website = 'https://github.com/interactive-game-maps/kona';
+var attribution = `<div>Icons made by <a href="https://fontawesome.com/" title="Font Awesome">Font Awesome</a> under <a href="https://fontawesome.com/license">CCA4</a>.</div>`;
+
 var map = L.map('map', {
     crs: L.CRS.Simple,
     // minZoom: 0,
@@ -131,13 +134,30 @@ tiled_map.addTo(map);
 
         localStorage.setItem('custom_layers', JSON.stringify(array));
     };
+
+    // The unload method seems unreliable so also save every 5 minutes
+    var interval = window.setInterval(() => {
+        var array = [];
+
+        if (Object.keys(custom_layers).length < 1) {
+            localStorage.removeItem('custom_layers');
+            return;
+        }
+
+        Object.keys(custom_layers).forEach(key => {
+            localStorage.setItem(key, JSON.stringify(custom_layers[key].toGeoJSON()));
+            array.push(key);
+        });
+
+        localStorage.setItem('custom_layers', JSON.stringify(array));
+    }, 300000);
 }
 
 {// Add sidebar to map
     var sidebar = L.control.sidebar({
         autopan: true,
         closeButton: true,
-        contianer: 'sidebar',
+        container: 'sidebar',
         position: 'left'
     }).addTo(map);
 
@@ -217,16 +237,14 @@ tiled_map.addTo(map);
         tab: '<i class="fas fa-info-circle"></i>',
         title: 'Attributions',
         position: 'bottom',
-        pane: `
-            <div>Icons made by <a href="https://fontawesome.com/" title="Font Awesome">Font Awesome</a> under <a href="https://fontawesome.com/license">CCA4</a>.</div>
-            `
+        pane: attribution
     });
 
     sidebar.addPanel({
         id: 'visit-github',
         tab: '<i class="fab fa-github"></i>',
         position: 'bottom',
-        button: 'https://github.com/interactive-game-maps/kona'
+        button: website
     });
 
     sidebar.addPanel({
@@ -251,3 +269,6 @@ tiled_map.addTo(map);
 
 // global list to access marker later on
 var marker = new Map();
+
+// initialize default layers variable where the layers can be added to later on
+var default_layers = [];

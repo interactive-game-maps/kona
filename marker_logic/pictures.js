@@ -1,18 +1,10 @@
-// Create list
-var pictures_list = document.createElement('ul');
-pictures_list.className = 'collectibles_list';
-
-// Add list to sidebar
 var pictures_group_name = 'Pictures';
-sidebar.addPanel({
-    id: 'pictures',
-    tab: '<i class="fas fa-images"></i>',
-    title: pictures_group_name,
-    pane: '<p></p>' // placeholder to get a proper pane
-});
-document.getElementById('pictures').appendChild(pictures_list);
+var pictures_group_id = 'pictures';
+var pictures_create_checkbox = true;
 
-// Create marekr group
+var pictures_list = createSidebarTab(pictures_group_id, pictures_group_name, '<i class="fas fa-images"></i>');
+
+// Create marker group
 var pictures_group = L.markerClusterGroup({
     maxClusterRadius: 40
 });
@@ -33,13 +25,24 @@ L.geoJSON(pictures, {
         });
     },
     onEachFeature: (feature, layer) => {
-        onEachFeature(feature, layer, {
+        addPopup(feature, layer, {
             layer_group: pictures_group,
             list: pictures_list,
-            list_name: "pictures",
-            create_checkbox: true
+            list_id: pictures_group_id,
+            create_checkbox: pictures_create_checkbox
+        });
+        saveMarker(feature, layer, {
+            list_id: pictures_group_id
         });
     }
 }).addTo(pictures_group);
-marker.get('pictures').set('group', pictures_group);
-marker.get('pictures').set('name', pictures_group_name);
+marker.get(pictures_group_id).set('group', pictures_group);
+marker.get(pictures_group_id).set('name', pictures_group_name);
+
+if (pictures_create_checkbox) {
+    setColumnCount(marker.get(pictures_group_id), pictures_list);
+}
+
+// Add as a default layer
+// This needs the display name because the layer control don't report ids
+default_layers.push(pictures_group_name);

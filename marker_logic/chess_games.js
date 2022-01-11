@@ -1,18 +1,10 @@
-// Create list
-var chess_games_list = document.createElement('ul');
-chess_games_list.className = 'collectibles_list';
-
-// Add list to sidebar
 var chess_games_group_name = 'Chess Games';
-sidebar.addPanel({
-    id: 'chess_games',
-    tab: '<i class="fas fa-chess-knight"></i>',
-    title: chess_games_group_name,
-    pane: '<p></p>' // placeholder to get a proper pane
-});
-document.getElementById('chess_games').appendChild(chess_games_list);
+var chess_games_group_id = 'chess_games';
+var chess_games_create_checkbox = true;
 
-// Create marekr group
+var chess_games_list = createSidebarTab(chess_games_group_id, chess_games_group_name, '<i class="fas fa-chess-knight"></i>');
+
+// Create marker group
 var chess_games_group = L.markerClusterGroup({
     maxClusterRadius: 40
 });
@@ -33,13 +25,20 @@ L.geoJSON(chess_games, {
         });
     },
     onEachFeature: (feature, layer) => {
-        onEachFeature(feature, layer, {
+        addPopup(feature, layer, {
             layer_group: chess_games_group,
             list: chess_games_list,
-            list_name: "chess_games",
-            create_checkbox: true
+            list_id: chess_games_group_id,
+            create_checkbox: chess_games_create_checkbox
+        });
+        saveMarker(feature, layer, {
+            list_id: chess_games_group_id
         });
     }
 }).addTo(chess_games_group);
-marker.get('chess_games').set('group', chess_games_group);
-marker.get('chess_games').set('name', chess_games_group_name);
+marker.get(chess_games_group_id).set('group', chess_games_group);
+marker.get(chess_games_group_id).set('name', chess_games_group_name);
+
+if (chess_games_create_checkbox) {
+    setColumnCount(marker.get(chess_games_group_id), chess_games_list);
+}
