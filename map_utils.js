@@ -1,4 +1,33 @@
 // Helper functions
+function getPopupMedia(feature, html) {
+    if (feature.properties.id) {
+        var image_link = document.createElement('a');
+        image_link.className = 'popup-media';
+        image_link.href = `images/${params.list_id}/${feature.properties.id}.jpg`;
+
+        var image = document.createElement('img');
+        image.src = `images/${params.list_id}/${feature.properties.id}.jpg`;
+        image.width = POPUP_WIDTH;
+
+        image_link.appendChild(image);
+        html.appendChild(image_link);
+    } else if (feature.properties.video_id) {
+        var video = document.createElement('iframe');
+        video.className = 'popup-media';
+        video.width = POPUP_WIDTH;
+        video.height = POPUP_WIDTH / 16 * 9;
+        video.src = `https://www.youtube-nocookie.com/embed/${feature.properties.video_id}`;
+        video.title = 'YouTube video player';
+        video.frameborder = 0;
+        // video.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; allowfullscreen'
+
+        html.appendChild(video);
+    }
+
+    return html;
+}
+
+
 function add_checkbox(feature, list, list_id, layer_group) {
     if (!document.getElementById(list_id + ':' + feature.properties.id)) {
         var list_entry = document.createElement('li');
@@ -32,7 +61,7 @@ function add_checkbox(feature, list, list_id, layer_group) {
         list.appendChild(list_entry);
 
         // hide if checked previously
-        if (localStorage.getItem(list_id + ":" + feature.properties.id)) {
+        if (localStorage.getItem(`${website_subdir}:${list_id}:${feature.properties.id}`)) {
             checkbox.checked = true;
         }
 
@@ -44,7 +73,7 @@ function add_checkbox(feature, list, list_id, layer_group) {
                     // check popup checkbox
                     checkbox.checked = true;
                     // save to localStorage
-                    localStorage.setItem(list_id + ":" + feature.properties.id, true);
+                    localStorage.setItem(`${website_subdir}:${list_id}:${feature.properties.id}`, true);
                     // remove all with ID from map
                     marker.get(list_id).get(feature.properties.id).forEach(e => {
                         layer_group.removeLayer(e);
@@ -53,7 +82,7 @@ function add_checkbox(feature, list, list_id, layer_group) {
                     // uncheck popup checkbox
                     checkbox.checked = false;
                     // remove from localStorage
-                    localStorage.removeItem(list_id + ":" + feature.properties.id);
+                    localStorage.removeItem(`${website_subdir}:${list_id}:${feature.properties.id}`);
                     // add all with ID to map
                     marker.get(list_id).get(feature.properties.id).forEach(e => {
                         e.addTo(layer_group);
@@ -82,37 +111,21 @@ function addPopup(feature, layer, args = {}) {
 
             var title = document.createElement('h2');
             title.className = 'popup-title';
+
+            // While it would be nice to display a readable name here this would break any recognizable association to the sidebar list.
             title.innerHTML = feature.properties.id;
+
             html.appendChild(title);
 
-            if (feature.properties.id) {
-                var image_link = document.createElement('a');
-                image_link.className = 'popup-media';
-                image_link.href = 'images/' + params.list_id + '/' + feature.properties.id + '.jpg';
-
-                var image = document.createElement('img');
-                image.src = 'images/' + params.list_id + '/' + feature.properties.id + '.jpg';
-                image.width = POPUP_WIDTH;
-
-                image_link.appendChild(image);
-                html.appendChild(image_link);
-            } else if (feature.properties.video_id) {
-                var video = document.createElement('iframe');
-                video.className = 'popup-media';
-                video.width = POPUP_WIDTH;
-                video.height = POPUP_WIDTH / 16 * 9;
-                video.src = 'https://www.youtube-nocookie.com/embed/' + feature.properties.video_id;
-                video.title = 'YouTube video player';
-                video.frameborder = 0;
-                // video.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; allowfullscreen'
-
-                html.appendChild(video);
-            }
+            html = getPopupMedia(feature, html);
 
             if (feature.properties.description) {
                 var description = document.createElement('p');
                 description.className = 'popup-description';
-                description.innerHTML = feature.properties.description;
+                var span = document.createElement('span');
+                span.setAttribute('style', 'white-space: pre-wrap');
+                span.appendChild(document.createTextNode(feature.properties.description));
+                description.appendChild(span);
 
                 html.appendChild(description);
             }
@@ -126,7 +139,7 @@ function addPopup(feature, layer, args = {}) {
                 var checkbox = document.createElement('input');
                 checkbox.type = 'checkbox';
 
-                if (localStorage.getItem(params.list_id + ":" + feature.properties.id)) {
+                if (localStorage.getItem(`${website_subdir}:${params.list_id}:${feature.properties.id}`)) {
                     checkbox.checked = true;
                 }
 
@@ -135,7 +148,7 @@ function addPopup(feature, layer, args = {}) {
                         // check global checkbox
                         document.getElementById(params.list_id + ':' + feature.properties.id).checked = true;
                         // save to localStorage
-                        localStorage.setItem(params.list_id + ":" + feature.properties.id, true);
+                        localStorage.setItem(`${website_subdir}:${params.list_id}:${feature.properties.id}`, true);
                         // remove all with ID from map
                         marker.get(params.list_id).get(feature.properties.id).forEach(e => {
                             params.layer_group.removeLayer(e);
@@ -144,7 +157,7 @@ function addPopup(feature, layer, args = {}) {
                         // uncheck global checkbox
                         document.getElementById(params.list_id + ':' + feature.properties.id).checked = false;
                         // remove from localStorage
-                        localStorage.removeItem(params.list_id + ":" + feature.properties.id);
+                        localStorage.removeItem(`${website_subdir}:${params.list_id}:${feature.properties.id}`);
                         // add all with ID to map
                         marker.get(params.list_id).get(feature.properties.id).forEach(e => {
                             e.addTo(params.layer_group);
@@ -163,7 +176,7 @@ function addPopup(feature, layer, args = {}) {
             });
 
             layer.on('popupclose', (event) => {
-                history.replaceState({}, "", "/kona");
+                history.replaceState({}, "", `/${website_subdir}`);
             });
 
             return html;
