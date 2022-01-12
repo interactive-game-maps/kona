@@ -1,14 +1,14 @@
 // Helper functions
-function getPopupMedia(feature, html) {
+function getPopupMedia(feature, list_id, html) {
     const POPUP_WIDTH = 500;
 
     if (feature.properties.id) {
         var image_link = document.createElement('a');
         image_link.className = 'popup-media';
-        image_link.href = `images/${params.list_id}/${feature.properties.id}.jpg`;
+        image_link.href = `images/${list_id}/${feature.properties.id}.jpg`;
 
         var image = document.createElement('img');
-        image.src = `images/${params.list_id}/${feature.properties.id}.jpg`;
+        image.src = `images/${list_id}/${feature.properties.id}.jpg`;
         image.width = POPUP_WIDTH;
 
         image_link.appendChild(image);
@@ -28,7 +28,6 @@ function getPopupMedia(feature, html) {
 
     return html;
 }
-
 
 function add_checkbox(feature, list, list_id, layer_group) {
     if (!document.getElementById(list_id + ':' + feature.properties.id)) {
@@ -118,7 +117,7 @@ function addPopup(feature, layer, args = {}) {
 
             html.appendChild(title);
 
-            html = getPopupMedia(feature, html);
+            html = getPopupMedia(feature, params.list_id, html);
 
             if (feature.properties.description) {
                 var description = document.createElement('p');
