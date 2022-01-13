@@ -13,6 +13,7 @@ var documents_icon = L.Icon.Default.extend({
     options: {
         imagePath: './',
         iconUrl: 'marker/documents.png',
+        iconRetinaUrl: 'marker/documents.png',
         shadowUrl: 'marker/shadow.png'
     }
 });

@@ -13,6 +13,7 @@ var fire_places_icon = L.Icon.Default.extend({
     options: {
         imagePath: './',
         iconUrl: 'marker/fire_places.png',
+        iconRetinaUrl: 'marker/fire_places.png',
         shadowUrl: 'marker/shadow.png'
     }
 });

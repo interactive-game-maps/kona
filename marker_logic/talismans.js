@@ -13,6 +13,7 @@ var talismans_icon = L.Icon.Default.extend({
     options: {
         imagePath: './',
         iconUrl: 'marker/talismans.png',
+        iconRetinaUrl: 'marker/talismans.png',
         shadowUrl: 'marker/shadow.png'
     }
 });

@@ -13,6 +13,7 @@ var chess_games_icon = L.Icon.Default.extend({
     options: {
         imagePath: './',
         iconUrl: 'marker/chess_games.png',
+        iconRetinaUrl: 'marker/chess_games.png',
         shadowUrl: 'marker/shadow.png'
     }
 });
