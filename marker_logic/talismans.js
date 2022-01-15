@@ -9,19 +9,10 @@ var talismans_group = L.markerClusterGroup({
     maxClusterRadius: 40
 });
 
-var talismans_icon = L.Icon.Default.extend({
-    options: {
-        imagePath: './',
-        iconUrl: 'marker/talismans.png',
-        iconRetinaUrl: 'marker/talismans.png',
-        shadowUrl: 'marker/shadow.png'
-    }
-});
-
 L.geoJSON(talismans, {
     pointToLayer: (feature, latlng) => {
         return L.marker(latlng, {
-            icon: new talismans_icon,
+            icon: getCustomIcon('fa-gem'),
             riseOnHover: true
         });
     },

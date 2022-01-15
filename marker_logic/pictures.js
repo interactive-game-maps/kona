@@ -9,19 +9,10 @@ var pictures_group = L.markerClusterGroup({
     maxClusterRadius: 40
 });
 
-var pictures_icon = L.Icon.Default.extend({
-    options: {
-        imagePath: './',
-        iconUrl: 'marker/pictures.png',
-        iconRetinaUrl: 'marker/pictures.png',
-        shadowUrl: 'marker/shadow.png'
-    }
-});
-
 L.geoJSON(pictures, {
     pointToLayer: (feature, latlng) => {
         return L.marker(latlng, {
-            icon: new pictures_icon,
+            icon: getCustomIcon('fa-images'),
             riseOnHover: true
         });
     },

@@ -9,19 +9,10 @@ var chess_games_group = L.markerClusterGroup({
     maxClusterRadius: 40
 });
 
-var chess_games_icon = L.Icon.Default.extend({
-    options: {
-        imagePath: './',
-        iconUrl: 'marker/chess_games.png',
-        iconRetinaUrl: 'marker/chess_games.png',
-        shadowUrl: 'marker/shadow.png'
-    }
-});
-
 L.geoJSON(chess_games, {
     pointToLayer: (feature, latlng) => {
         return L.marker(latlng, {
-            icon: new chess_games_icon,
+            icon: getCustomIcon('fa-chess-knight'),
             riseOnHover: true
         });
     },

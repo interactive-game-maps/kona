@@ -9,19 +9,10 @@ var fire_places_group = L.markerClusterGroup({
     maxClusterRadius: 40
 });
 
-var fire_places_icon = L.Icon.Default.extend({
-    options: {
-        imagePath: './',
-        iconUrl: 'marker/fire_places.png',
-        iconRetinaUrl: 'marker/fire_places.png',
-        shadowUrl: 'marker/shadow.png'
-    }
-});
-
 L.geoJSON(fire_places, {
     pointToLayer: (feature, latlng) => {
         return L.marker(latlng, {
-            icon: new fire_places_icon,
+            icon: getCustomIcon('fa-fire'),
             riseOnHover: true
         });
     },
