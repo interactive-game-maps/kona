@@ -4,10 +4,7 @@ var talismans_create_checkbox = true;
 
 var talismans_list = createSidebarTab(talismans_group_id, talismans_group_name, '<i class="fas fa-gem"></i>');
 
-// Create marker group
-var talismans_group = L.markerClusterGroup({
-    maxClusterRadius: 40
-});
+var talismans_group = L.featureGroup.subGroup(marker_cluster);
 
 L.geoJSON(talismans, {
     pointToLayer: (feature, latlng) => {

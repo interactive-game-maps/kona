@@ -4,10 +4,7 @@ var pictures_create_checkbox = true;
 
 var pictures_list = createSidebarTab(pictures_group_id, pictures_group_name, '<i class="fas fa-images"></i>');
 
-// Create marker group
-var pictures_group = L.markerClusterGroup({
-    maxClusterRadius: 40
-});
+var pictures_group = L.featureGroup.subGroup(marker_cluster);
 
 L.geoJSON(pictures, {
     pointToLayer: (feature, latlng) => {

@@ -16,8 +16,11 @@
 	<!-- Grouping markers to cluster -->
 	<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" crossorigin="" />
 	<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css"
-		crossorigin="" />
+	crossorigin="" />
 	<script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js" crossorigin=""></script>
+
+	<!-- Nested marker cluster -->
+	<script src="https://unpkg.com/leaflet.featuregroup.subgroup@latest/dist/leaflet.featuregroup.subgroup.js"></script>
 
 	<!-- Additional icons -->
 	<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/fontawesome.min.css" rel="stylesheet"
@@ -37,34 +40,37 @@
 	<script src="https://unpkg.com/@geoman-io/leaflet-geoman-free@latest/dist/leaflet-geoman.min.js"
 		crossorigin=""></script>
 
-	<link rel="stylesheet" href="style.css" />
+
+	<link rel="stylesheet" href="common/style.css" />
 </head>
 
 <body>
 	<div id="map"></div>
 
 	<!-- include map base layers -->
-	<script src="./map_layers.js" type="text/javascript"></script>
+	<script src="map_layers.js" type="text/javascript"></script>
+	<script src="common/layers.js" type="text/javascript"></script>
 
 	<!-- include map utils -->
-	<script src="./map_utils.js" type="text/javascript"></script>
+	<script src="common/utils.js" type="text/javascript"></script>
+	<script src="map_utils.js" type="text/javascript"></script>
 
 	<!-- include markers from file -->
-	<script src="./marker/documents.js" type="text/javascript"></script>
-	<script src="./marker/chess_games.js" type="text/javascript"></script>
-	<script src="./marker/fire_places.js" type="text/javascript"></script>
-	<script src="./marker/pictures.js" type="text/javascript"></script>
-	<script src="./marker/talismans.js" type="text/javascript"></script>
+	<script src="marker/documents.js" type="text/javascript"></script>
+	<script src="marker/chess_games.js" type="text/javascript"></script>
+	<script src="marker/fire_places.js" type="text/javascript"></script>
+	<script src="marker/pictures.js" type="text/javascript"></script>
+	<script src="marker/talismans.js" type="text/javascript"></script>
 
 	<!-- include marker logic -->
-	<script src="./marker_logic/documents.js" type="text/javascript"></script>
-	<script src="./marker_logic/fire_places.js" type="text/javascript"></script>
-	<script src="./marker_logic/pictures.js" type="text/javascript"></script>
-	<script src="./marker_logic/talismans.js" type="text/javascript"></script>
-	<script src="./marker_logic/chess_games.js" type="text/javascript"></script>
+	<script src="marker_logic/documents.js" type="text/javascript"></script>
+	<script src="marker_logic/fire_places.js" type="text/javascript"></script>
+	<script src="marker_logic/pictures.js" type="text/javascript"></script>
+	<script src="marker_logic/talismans.js" type="text/javascript"></script>
+	<script src="marker_logic/chess_games.js" type="text/javascript"></script>
 
 	<!-- include map base layers -->
-	<script src="./map_controls.js" type="text/javascript"></script>
+	<script src="common/controls.js" type="text/javascript"></script>
 </body>
 
 </html>

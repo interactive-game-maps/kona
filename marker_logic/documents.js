@@ -4,10 +4,7 @@ var documents_create_checkbox = true;
 
 var documents_list = createSidebarTab(documents_group_id, documents_group_name, '<i class="fas fa-file"></i>');
 
-// Create marker group
-var documents_group = L.markerClusterGroup({
-    maxClusterRadius: 40
-});
+var documents_group = L.featureGroup.subGroup(marker_cluster);
 
 L.geoJSON(documents, {
     pointToLayer: (feature, latlng) => {

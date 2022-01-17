@@ -4,10 +4,7 @@ var fire_places_create_checkbox = true;
 
 var fire_places_list = createSidebarTab(fire_places_group_id, fire_places_group_name, '<i class="fas fa-fire"></i>');
 
-// Create marker group
-var fire_places_group = L.markerClusterGroup({
-    maxClusterRadius: 40
-});
+var fire_places_group = L.featureGroup.subGroup(marker_cluster);
 
 L.geoJSON(fire_places, {
     pointToLayer: (feature, latlng) => {

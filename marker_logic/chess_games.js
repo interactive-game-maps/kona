@@ -4,10 +4,7 @@ var chess_games_create_checkbox = true;
 
 var chess_games_list = createSidebarTab(chess_games_group_id, chess_games_group_name, '<i class="fas fa-chess-knight"></i>');
 
-// Create marker group
-var chess_games_group = L.markerClusterGroup({
-    maxClusterRadius: 40
-});
+var chess_games_group = L.featureGroup.subGroup(marker_cluster);
 
 L.geoJSON(chess_games, {
     pointToLayer: (feature, latlng) => {
