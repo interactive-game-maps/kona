@@ -138,7 +138,7 @@ marker.forEach((v, k) => {
     });
     share_marker.on('moveend', e => {
         highlightMarkerRemove(share_marker);
-        history.replaceState({}, "", `?share=${e.target._latlng.lat},${e.target._latlng.lng}`);
+        history.replaceState({}, "", `?share=${e.target._latlng.lng},${e.target._latlng.lat}`);
     });
     share_marker.bindPopup(() => {
         var html = document.createElement('div');
@@ -161,10 +161,9 @@ marker.forEach((v, k) => {
     });
 
     function moveShareMarker(e) {
-        highlightMarkerRemove(share_marker);
         share_marker.setLatLng(e.latlng);
         share_marker.addTo(map);
-        history.replaceState({}, "", `?share=${e.latlng.lat},${e.latlng.lng}`);
+        history.replaceState({}, "", `?share=${e.latlng.lng},${e.latlng.lat}`);
     }
     map.on('click', moveShareMarker);
 }
@@ -176,7 +175,7 @@ if (urlParams.has('share')) {
     const share = urlParams.get('share');
 
     let latlng = share.split(",");
-    share_marker.setLatLng([latlng[0], latlng[1]]);
+    share_marker.setLatLng([latlng[1], latlng[0]]);
     share_marker.addTo(map);
     let bounds = [];
     bounds.push([share_marker._latlng.lat, share_marker._latlng.lng]);

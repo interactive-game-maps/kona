@@ -18,6 +18,9 @@ var common_attribution = `
 <li>Icons from <a href="https://fontawesome.com/" title="Font Awesome">Font Awesome</a> under <a href="https://fontawesome.com/license">CCA4</a>.</li>
 `
 
+// Save currently highlighted marker for easy access
+var highlightedMarker = [];
+
 { // Edit toolbar
     // Disable general editing
     L.PM.setOptIn(true);

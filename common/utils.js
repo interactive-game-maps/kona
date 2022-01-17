@@ -1,4 +1,4 @@
-function addCheckbox(feature, list, list_id, layer_group) {
+function addCheckbox(feature, html_list, list_id, layer_group) {
     if (!document.getElementById(list_id + ':' + feature.properties.id)) {
         var list_entry = document.createElement('li');
         list_entry.className = 'flex-grow-1';
@@ -28,13 +28,17 @@ function addCheckbox(feature, list, list_id, layer_group) {
 
             // rewrite url for easy copy pasta
             setHistoryState(list_id, feature.properties.id);
+
+            highlightMarkerRemoveAll();
+            highlightFeatureID(list_id, feature.properties.id);
+            zoomToFeature(list_id, feature.properties.id);
         });
         locate_button.className = 'flex-grow-0';
 
         list_entry.appendChild(checkbox);
         list_entry.appendChild(label);
         list_entry.appendChild(locate_button);
-        list.appendChild(list_entry);
+        html_list.appendChild(list_entry);
 
         // hide if checked previously
         if (localStorage.getItem(`${website_subdir}:${list_id}:${feature.properties.id}`)) {
@@ -179,15 +183,33 @@ function saveMarker(feature, layer, args = {}) {
 }
 
 function highlightMarker(element) {
-    var icon = element.getIcon();
-    icon.options.html = `<div class="map-marker-ping"></div>${icon.options.html}`;
-    element.setIcon(icon);
+    if (!highlightedMarker.includes(element)) {
+        var icon = element.getIcon();
+        icon.options.html = `<div class="map-marker-ping"></div>${icon.options.html}`;
+        element.setIcon(icon);
+
+        highlightedMarker.push(element);
+    }
+
+    map.on('click', highlightMarkerRemoveAll);
 }
 
 function highlightMarkerRemove(element) {
-    var icon = element.getIcon();
-    icon.options.html = icon.options.html.replace('<div class="map-marker-ping"></div>', '');
-    element.setIcon(icon);
+    if (highlightedMarker.includes(element)) {
+        highlightedMarker.splice(highlightedMarker.indexOf(element), 1);
+
+        var icon = element.getIcon();
+        icon.options.html = icon.options.html.replace('<div class="map-marker-ping"></div>', '');
+        element.setIcon(icon);
+    }
+}
+
+function highlightMarkerRemoveAll() {
+    highlightedMarker.forEach(element => {
+        highlightMarkerRemove(element);
+    });
+
+    map.off('click', highlightMarkerRemoveAll);
 }
 
 function highlightFeatureID(list, id) {
@@ -230,7 +252,14 @@ function zoomToFeature(list, id) {
         // Multiple markers
         zoomToBounds(getOuterBounds(list, id));
     } else {
-        marker_cluster.zoomToShowLayer(marker.get(list).get(id)[0]);
+        // Single marker
+        marker_cluster.zoomToShowLayer(marker.get(list).get(id)[0], () => {
+            // Zoom in further if we can
+            if (map.getZoom() < MAX_ZOOM) {
+                zoomToBounds(getOuterBounds(list, id));
+            }
+        });
+
     }
 }
 
