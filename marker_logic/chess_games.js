@@ -3,7 +3,6 @@ var chess_games_group_id = 'chess_games';
 var chess_games_create_checkbox = true;
 
 var chess_games_list = createSidebarTab(chess_games_group_id, chess_games_group_name, '<i class="fas fa-chess-knight"></i>');
-
 var chess_games_group = L.featureGroup.subGroup(marker_cluster);
 
 L.geoJSON(chess_games, {
@@ -24,7 +23,10 @@ L.geoJSON(chess_games, {
             list_id: chess_games_group_id
         });
     }
-}).addTo(chess_games_group);
+}).getLayers().forEach(layer => {
+    chess_games_group.addLayer(layer);
+});
+
 marker.get(chess_games_group_id).set('group', chess_games_group);
 marker.get(chess_games_group_id).set('name', chess_games_group_name);
 

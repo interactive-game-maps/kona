@@ -3,7 +3,6 @@ var documents_group_id = 'documents';
 var documents_create_checkbox = true;
 
 var documents_list = createSidebarTab(documents_group_id, documents_group_name, '<i class="fas fa-file"></i>');
-
 var documents_group = L.featureGroup.subGroup(marker_cluster);
 
 L.geoJSON(documents, {
@@ -24,7 +23,10 @@ L.geoJSON(documents, {
             list_id: documents_group_id
         });
     }
-}).addTo(documents_group);
+}).getLayers().forEach(layer => {
+    documents_group.addLayer(layer);
+});
+
 marker.get(documents_group_id).set('group', documents_group);
 marker.get(documents_group_id).set('name', documents_group_name);
 

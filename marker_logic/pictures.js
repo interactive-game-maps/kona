@@ -3,7 +3,6 @@ var pictures_group_id = 'pictures';
 var pictures_create_checkbox = true;
 
 var pictures_list = createSidebarTab(pictures_group_id, pictures_group_name, '<i class="fas fa-images"></i>');
-
 var pictures_group = L.featureGroup.subGroup(marker_cluster);
 
 L.geoJSON(pictures, {
@@ -24,7 +23,10 @@ L.geoJSON(pictures, {
             list_id: pictures_group_id
         });
     }
-}).addTo(pictures_group);
+}).getLayers().forEach(layer => {
+    pictures_group.addLayer(layer);
+});
+
 marker.get(pictures_group_id).set('group', pictures_group);
 marker.get(pictures_group_id).set('name', pictures_group_name);
 

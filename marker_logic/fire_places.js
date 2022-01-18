@@ -3,7 +3,6 @@ var fire_places_group_id = 'fire_places';
 var fire_places_create_checkbox = true;
 
 var fire_places_list = createSidebarTab(fire_places_group_id, fire_places_group_name, '<i class="fas fa-fire"></i>');
-
 var fire_places_group = L.featureGroup.subGroup(marker_cluster);
 
 L.geoJSON(fire_places, {
@@ -24,7 +23,10 @@ L.geoJSON(fire_places, {
             list_id: fire_places_group_id
         });
     }
-}).addTo(fire_places_group);
+}).getLayers().forEach(layer => {
+    fire_places_group.addLayer(layer);
+});
+
 marker.get(fire_places_group_id).set('group', fire_places_group);
 marker.get(fire_places_group_id).set('name', fire_places_group_name);
 

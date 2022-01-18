@@ -3,7 +3,6 @@ var talismans_group_id = 'talismans';
 var talismans_create_checkbox = true;
 
 var talismans_list = createSidebarTab(talismans_group_id, talismans_group_name, '<i class="fas fa-gem"></i>');
-
 var talismans_group = L.featureGroup.subGroup(marker_cluster);
 
 L.geoJSON(talismans, {
@@ -24,7 +23,10 @@ L.geoJSON(talismans, {
             list_id: talismans_group_id
         });
     }
-}).addTo(talismans_group);
+}).getLayers().forEach(layer => {
+    talismans_group.addLayer(layer);
+});
+
 marker.get(talismans_group_id).set('group', talismans_group);
 marker.get(talismans_group_id).set('name', talismans_group_name);
 
