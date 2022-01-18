@@ -19,8 +19,6 @@ function addCheckbox(feature, html_list, list_id, layer_group) {
         var locate_button = document.createElement('button');
         locate_button.innerHTML = icon.outerHTML;
         locate_button.addEventListener('click', () => {
-            map.setView(marker.get(list_id).get(feature.properties.id)[0].getLatLng());
-
             // Close sidebar if it spans over the complete view
             if (window.matchMedia('(max-device-width: 767px)').matches) {
                 sidebar.close();
@@ -29,8 +27,8 @@ function addCheckbox(feature, html_list, list_id, layer_group) {
             // rewrite url for easy copy pasta
             setHistoryState(list_id, feature.properties.id);
 
-            highlightMarkerRemoveAll();
-            highlightFeatureID(list_id, feature.properties.id);
+            highlightFeatureRemoveAll();
+            highlightFeatureId(list_id, feature.properties.id);
             zoomToFeature(list_id, feature.properties.id);
         });
         locate_button.className = 'flex-grow-0';
@@ -50,8 +48,6 @@ function addCheckbox(feature, html_list, list_id, layer_group) {
             // if not a marker try to assign to the same checkbox as the corresponding marker
             document.getElementById(list_id + ':' + feature.properties.id).addEventListener('change', (element) => {
                 if (element.target.checked) {
-                    // check popup checkbox
-                    checkbox.checked = true;
                     // save to localStorage
                     localStorage.setItem(`${website_subdir}:${list_id}:${feature.properties.id}`, true);
                     // remove all with ID from map
@@ -59,8 +55,6 @@ function addCheckbox(feature, html_list, list_id, layer_group) {
                         layer_group.removeLayer(e);
                     });
                 } else {
-                    // uncheck popup checkbox
-                    checkbox.checked = false;
                     // remove from localStorage
                     localStorage.removeItem(`${website_subdir}:${list_id}:${feature.properties.id}`);
                     // add all with ID to map
@@ -191,36 +185,76 @@ function highlightMarker(element) {
         highlightedMarker.push(element);
     }
 
-    map.on('click', highlightMarkerRemoveAll);
+    map.on('click', highlightFeatureRemoveAll);
 }
 
 function highlightMarkerRemove(element) {
-    if (highlightedMarker.includes(element)) {
-        highlightedMarker.splice(highlightedMarker.indexOf(element), 1);
+    var icon = element.getIcon();
+    icon.options.html = icon.options.html.replace('<div class="map-marker-ping"></div>', '');
+    element.setIcon(icon);
 
-        var icon = element.getIcon();
-        icon.options.html = icon.options.html.replace('<div class="map-marker-ping"></div>', '');
-        element.setIcon(icon);
+    return true;
+}
+
+function highlightFeatureRemoveAll() {
+    highlightedMarker.forEach(element => {
+        if (element._latlngs) {
+            geoJSONs.forEach(json => {
+                if (json.hasLayer(element)) {
+                    highlightLayerRemove(json, element);
+                }
+            });
+        } else {
+            highlightMarkerRemove(element);
+        }
+    });
+
+    highlightedMarker = [];
+
+    map.off('click', highlightFeatureRemoveAll);
+}
+
+// https://stackoverflow.com/a/24813338
+function* reverseKeys(arr) {
+    var key = arr.length - 1;
+
+    while (key >= 0) {
+        yield key;
+        key -= 1;
     }
 }
 
-function highlightMarkerRemoveAll() {
-    highlightedMarker.forEach(element => {
-        highlightMarkerRemove(element);
-    });
+// https://stackoverflow.com/a/24813338
+function highlightFeatureIdRemove(list, id, geojson = undefined) {
+    for (const index of reverseKeys(highlightedMarker)) {
+        var element = highlightedMarker[index];
+        if (marker.get(list).get(id).includes(element)) {
+            if (element._latlngs) {
+                if (!geojson) {
+                    geoJSONs.forEach(json => {
+                        if (json.hasLayer(element)) {
+                            geojson = json;
+                        }
 
-    map.off('click', highlightMarkerRemoveAll);
+                    });
+                }
+                if (highlightLayerRemove(geojson, element)) {
+                    highlightedMarker.splice(index, 1);
+                }
+            } else {
+                if (highlightMarkerRemove(element)) {
+                    highlightedMarker.splice(index, 1);
+                }
+            }
+        }
+    }
 }
 
-function highlightFeatureID(list, id) {
+function highlightFeatureId(list, id) {
     marker.get(list).get(id).forEach(element => {
         if (element._latlngs) {
             // Polygons
-            element.setStyle({
-                // color: 'blue',
-                opacity: 1.0,
-                fillOpacity: 0.8
-            });
+            highlightLayer(element);
         } else {
             // Marker
             highlightMarker(element);
@@ -228,17 +262,33 @@ function highlightFeatureID(list, id) {
     });
 }
 
-function highlightFeatureEvent(e) {
-    var layer = e.target;
+function highlightLayer(layer) {
+    if (!highlightedMarker.includes(layer)) {
+        layer.setStyle({
+            opacity: 1.0,
+            fillOpacity: 0.7
+        });
 
-    layer.setStyle({
-        opacity: 1.0,
-        fillOpacity: 0.7
-    });
+        if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+            layer.bringToFront();
+        }
 
-    if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-        layer.bringToFront();
+        highlightedMarker.push(layer);
     }
+}
+
+function highlightLayerRemove(geojson = undefined, layer = undefined) {
+    if (!geojson && layer) {
+        geoJSONs.forEach(geo => {
+            if (geo.hasLayer(layer)) {
+                geo.resetStyle(layer);
+            }
+        });
+    } else {
+        geojson.resetStyle(layer);
+    }
+
+    return true;
 }
 
 function zoomToBounds(bounds) {
@@ -252,14 +302,21 @@ function zoomToFeature(list, id) {
         // Multiple markers
         zoomToBounds(getOuterBounds(list, id));
     } else {
-        // Single marker
-        marker_cluster.zoomToShowLayer(marker.get(list).get(id)[0], () => {
-            // Zoom in further if we can
-            if (map.getZoom() < MAX_ZOOM) {
-                zoomToBounds(getOuterBounds(list, id));
-            }
-        });
-
+        var element = marker.get(list).get(id)[0];
+        if (element._latlngs) {
+            // Polygon
+            zoomToBounds(getOuterBounds(list, id));
+        } else {
+            // Single marker
+            marker_cluster.zoomToShowLayer(element, () => {
+                // Zoom in further if we can
+                window.setTimeout(() => {
+                    if (map.getZoom() < MAX_ZOOM) {
+                        zoomToBounds(getOuterBounds(list, id));
+                    }
+                }, 300);
+            });
+        }
     }
 }
 
