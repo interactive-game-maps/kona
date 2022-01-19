@@ -35,7 +35,7 @@ var user_layers = JSON.parse(localStorage.getItem(`${website_subdir}:user_layers
 if (!user_layers) {
     user_layers = [];
     interactive_layers.forEach((layer, id) => {
-        if (layer.is_default()) {
+        if (layer.isDefault()) {
             user_layers.push(layer.name);
         }
     });
