@@ -4,8 +4,6 @@ function removeAllHighlights() {
     });
 
     share_marker.removeHighlight();
-
-    map.off('click', removeAllHighlights);
 }
 
 function zoomToBounds(bounds) {

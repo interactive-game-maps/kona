@@ -1,5 +1,5 @@
 // Center view over map
-map.fitBounds(getMapBounds());
+zoomToBounds(getMapBounds());
 
 // Defining overlay maps - markers
 var overlayMaps = {};
@@ -77,8 +77,6 @@ if (urlParams.has('share')) {
 
     share_marker.highlight();
     share_marker.zoomTo();
-
-    map.on('click', removeAllHighlights);
 } else if (urlParams.has('list')) {
     const list = urlParams.get('list');
 
@@ -89,7 +87,7 @@ if (urlParams.has('share')) {
         layer.showLayer();
 
         if (!urlParams.has('id')) {
-            map.fitBounds(layer.getLayerBounds());
+            layer.zoomTo();
 
             // if no id open sidebar
             sidebar._tabitems.every(element => {

@@ -161,7 +161,7 @@ class InteractiveLayer {
             }
         });
 
-        map.on('click', this.removeAllHighlights, this);
+        map.on('click', () => { this.removeHighlightFeature(id); });
     }
 
     // https://stackoverflow.com/a/24813338
@@ -184,7 +184,7 @@ class InteractiveLayer {
             }
         }
 
-        map.off('click', this.removeAllHighlights, this);
+        map.off('click', () => { this.removeHighlightFeature(id); });
     }
 
     #highlightPoint(feature) {
@@ -259,6 +259,10 @@ class InteractiveLayer {
             var list_entry = document.createElement('li');
             list_entry.className = 'flex-grow-1';
 
+            var leave_function = () => { this.removeHighlightFeature(feature.properties.id); };
+            list_entry.addEventListener('mouseenter', () => { this.highlightFeature(feature.properties.id); });
+            list_entry.addEventListener('mouseleave', leave_function);
+
             var checkbox = document.createElement('input');
             checkbox.type = "checkbox";
             checkbox.id = this.id + ':' + feature.properties.id;
@@ -286,6 +290,12 @@ class InteractiveLayer {
                 removeAllHighlights();
                 this.highlightFeature(feature.properties.id);
                 this.zoomToFeature(feature.properties.id);
+
+                // tmp disable after button click
+                list_entry.removeEventListener('mouseleave', leave_function);
+                window.setTimeout(() => {
+                    list_entry.addEventListener('mouseleave', leave_function);
+                }, 3000);
             });
             locate_button.className = 'flex-grow-0';
 
@@ -445,5 +455,9 @@ class InteractiveLayer {
                 });
             }
         }
+    }
+
+    zoomTo() {
+        zoomToBounds(this.getLayerBounds());
     }
 }
