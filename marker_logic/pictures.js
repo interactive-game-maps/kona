@@ -1,5 +1,5 @@
-function getPictures() {
-    return new InteractiveLayer('pictures', pictures, {
+function addPictures(map) {
+    map.addInteractiveLayer('pictures', pictures, {
         name: "Pictures",
         create_checkbox: true,
         create_feature_popup: true,

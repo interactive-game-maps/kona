@@ -1,5 +1,5 @@
-function getChessGames() {
-    return new InteractiveLayer('chess_games', chess_games, {
+function addChessGames(map) {
+    map.addInteractiveLayer('chess_games', chess_games, {
         name: "Chess games",
         create_checkbox: true,
         create_feature_popup: true,

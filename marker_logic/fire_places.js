@@ -1,5 +1,5 @@
-function getFirePlaces() {
-    return new InteractiveLayer('fire_places', fire_places, {
+function addFirePlaces(map) {
+    map.addInteractiveLayer('fire_places', fire_places, {
         name: "Fire places",
         create_checkbox: true,
         create_feature_popup: true,

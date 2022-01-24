@@ -1,5 +1,5 @@
-function getTalismans() {
-    return new InteractiveLayer('talismans', talismans, {
+function addTalismans(map) {
+    map.addInteractiveLayer('talismans', talismans, {
         name: "Talismans",
         create_checkbox: true,
         create_feature_popup: true,

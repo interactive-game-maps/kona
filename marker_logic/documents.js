@@ -1,5 +1,5 @@
-function getDocuments() {
-    return new InteractiveLayer('documents', documents, {
+function addDocuments(map) {
+    map.addInteractiveLayer('documents', documents, {
         name: "Documents",
         create_checkbox: true,
         create_feature_popup: true,

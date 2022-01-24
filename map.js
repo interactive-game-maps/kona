@@ -11,10 +11,10 @@ interactive_map.addTileLayer('Ingame map', {
     attribution: '<a href="https://steamcommunity.com/sharedfiles/filedetails/?id=887075975">Map</a> from <a href="https://steamcommunity.com/profiles/76561197998056243">rogermorse</a>'
 });
 
-interactive_map.addInteractiveLayer(getDocuments());
-interactive_map.addInteractiveLayer(getFirePlaces());
-interactive_map.addInteractiveLayer(getPictures());
-interactive_map.addInteractiveLayer(getTalismans());
-interactive_map.addInteractiveLayer(getChessGames());
+addDocuments(interactive_map);
+addFirePlaces(interactive_map);
+addPictures(interactive_map);
+addTalismans(interactive_map);
+addChessGames(interactive_map);
 
 interactive_map.finalize();
