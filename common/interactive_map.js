@@ -91,8 +91,12 @@ class InteractiveMap {
             minNativeZoom: 3,
             maxNativeZoom: 5,
             noWrap: true,
-            detectRetina: true
+            detectRetina: true,
+            bounds: this.#getTileLayerBounds(url),
         }
+
+        console.log(defaults.bounds)
+
         let params = { ...defaults, ...args };
         params.maxNativeZoom = L.Browser.retina ? params.maxNativeZoom - 1 : params.maxNativeZoom; // 1 level LOWER for high pixel ratio device.
 
@@ -118,6 +122,7 @@ class InteractiveMap {
      * @param {string | function} [args.sidebar_icon_html=function () { return `<img class="sidebar-image" src="images/icons/${this.id}.png" />`; }] A html string for the sidebar icon. Can be a function which returns a html string. The function has access to values of this layer e.g. the `this.id`.
      * @param {function} [args.onEachFeature=function (feature, layer) { }] A function with stuff to do on each feature. Has access to values of this layer e.g. `this.id`. Default: `function (feature, layer) { }`
      * @param {function} [args.pointToLayer=function (feature, latlng) { return L.marker(latlng, { icon: Utils.getCustomIcon(this.id), riseOnHover: true }); }] A function describing what to do when putting a geoJSON point to a layer.
+     * @param {function} [args.coordsToLatLng=L.GeoJSON.coordsToLatLng] A function describing converting geoJSON coordinates to leaflets latlng.
      * @param {object | function} [args.polygon_style=function (feature) { return {}; }] An object or function returning an object with L.Path options. https://leafletjs.com/reference.html#path
      * @param {object | function} [args.polygon_style_highlight=function () { return { opacity: 1.0, fillOpacity: 0.7 }}] An object or function returning an object with L.Path options. https://leafletjs.com/reference.html#path
      * @param {L.LayerGroup} [args.feature_group=L.featureGroup.subGroup(this.#interactive_map.getClusterGroup())] The group all geoJson features get added to. Defaults to the default marker cluster.
@@ -522,5 +527,51 @@ class InteractiveMap {
         });
 
         return interactive_layer;
+    }
+
+    /**
+     * Tries to read an adjacent tilemapresource.xml and calculate the bounds for this tile layer.
+     *
+     * Falls back to 256.
+     *
+     * @param {string} url Location of the tiles
+     */
+    #getTileLayerBounds(url) {
+        if (window.location.protocol !== 'file:') {
+            // This request has to be synchronous because we can't set the tile layer bounds after initialization
+            const request = new XMLHttpRequest();
+            request.open("GET", url.replace("{z}/{x}/{y}.png", "tilemapresource.xml"), false); // `false` makes the request synchronous
+            request.send(null);
+
+            if (request.status === 200) {
+                try {
+                    const parser = new DOMParser();
+                    const xmlDoc = parser.parseFromString(request.responseText, "text/xml");
+                    const boundingBox = xmlDoc.getElementsByTagName("BoundingBox")[0];
+                    const reducedBounds = this.#reduceTileSizeBelow256(Math.abs(boundingBox.getAttribute("miny")), Math.abs(boundingBox.getAttribute("maxx")));
+
+                    return L.latLngBounds(L.latLng(0, 0), L.latLng(-reducedBounds[0], reducedBounds[1]));
+                } catch {
+                    console.log("Failed reading tilemapresource.xml");
+                }
+            }
+        }
+
+        return L.latLngBounds(L.latLng(0, 0), L.latLng(-256, 256)); // gdal2tiles.py never produces tiles larger than 256
+    }
+
+    /**
+     * Takes a two numbers and halfs them simultaneously until both are smaller than 256.
+     * @param {number} size1 Number to minify
+     * @param {number} size2 Number to minify similarly
+     * @returns [number, number]
+     */
+    #reduceTileSizeBelow256(size1, size2) {
+        while (size1 > 256 || size2 > 256) {
+            size1 = Math.floor(size1 / 2);
+            size2 = Math.floor(size2 / 2);
+        }
+
+        return [size1, size2];
     }
 }
